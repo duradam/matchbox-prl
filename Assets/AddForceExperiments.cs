@@ -12,7 +12,7 @@ public class AddForceExperiments : MonoBehaviour
     public GameObject Logger;
     private Text _loggerText;
     public Rigidbody cube;
-    public float m_Thrust = 4000f;
+    public float m_Thrust = 6000f;
     bool flaga = true;
     int t1 = DateTime.Now.Second;
     int t2 = DateTime.Now.Second;
@@ -20,35 +20,31 @@ public class AddForceExperiments : MonoBehaviour
     void Start()
     {
         _loggerText = Logger.GetComponent<Text>();
-        LogDebug("start");
         InputSystem.EnableDevice(Accelerometer.current);
     }
 
-    private void KickOffCube()
+    private void KickOffCube(float acceleration)
     {
-        Debug.Log("KickOffCube");
         LogDebug("KickOffCube");
-
-        cube.AddForce(Vector3.up * m_Thrust);
+        cube.AddForce(Vector3.up * m_Thrust * acceleration);
         flaga = false;
     }
 
     void Update()
     {
         Vector3 acceleration = Accelerometer.current.acceleration.ReadValue();
-        Debug.Log($"acc.x={acceleration.x} acc.y={acceleration.y} acc.z={acceleration.z}");
+        LogDebug($"acc.x={acceleration.x} acc.y={acceleration.y} acc.z={acceleration.z}");
         t2 = DateTime.Now.Second;
-        if (Math.Abs(t2 - t1) >= 3
-            && (Math.Abs(acceleration.x) + Math.Abs(acceleration.y) + Math.Abs(acceleration.z)) > 2)
+        if (cube.position.y<1 && Math.Abs(acceleration.y)  > .2f)
         {
-            KickOffCube();
+            KickOffCube(acceleration.y);
             t1 = DateTime.Now.Second;
         }
     }
 
     private void LogDebug(string msg)
     {
-        _loggerText.text = Environment.NewLine + DateTime.Now.ToString() + ": " + msg + _loggerText.text;
+        //_loggerText.text = DateTime.Now.ToString() + ": " + msg + _loggerText.text;
     }
 
 }
